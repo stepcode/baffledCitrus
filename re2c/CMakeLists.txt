@@ -22,11 +22,14 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/CMake")
-find_package(LEMON)
-if(NOT COMMAND LEMON_TARGET)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/LEMON_Util.cmake)
-endif(NOT COMMAND LEMON_TARGET)
+
+if( NOT RE2C_IS_SUBBUILD )
+  set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+  find_package(LEMON)
+  if(NOT COMMAND LEMON_TARGET)
+    include(${CMAKE_CURRENT_SOURCE_DIR}/CMake/LEMON_Util.cmake)
+  endif(NOT COMMAND LEMON_TARGET)
+endif( NOT RE2C_IS_SUBBUILD )
 
 LEMON_TARGET(re2cParse parser.yy parser.cc parser_tokens.h)
 
@@ -122,6 +125,11 @@ add_executable(re2c ${re2c_SRCS})
 
 # Need to link against stl library with some compilers.
 target_link_libraries(re2c "${STDCXX_LIBRARIES}")
+
+if( RE2C_IS_SUBBUILD )
+  add_dependencies( re2c_bootstrap lemon)
+  add_dependencies( re2c lemon)
+endif( RE2C_IS_SUBBUILD )
 
 # Install
 if(NOT BIN_DIR)

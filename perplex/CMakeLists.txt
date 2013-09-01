@@ -80,6 +80,10 @@ set(perplex_sources
 
 add_executable(perplex ${perplex_sources})
 
+if(PERPLEX_IS_SUBBUILD)
+  add_dependencies( perplex re2c lemon )
+endif(PERPLEX_IS_SUBBUILD)
+
 # Need to link against stl library with some compilers.
 target_link_libraries(perplex "${STDCXX_LIBRARIES}")
 
